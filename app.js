@@ -160,6 +160,7 @@ class TEOSApp {
 
     // Home Screen
     this.currentDateDisplay = document.getElementById('currentDateDisplay');
+    this.nextClassCard = document.getElementById('nextClassCard');
     this.nextClassName = document.getElementById('nextClassName');
     this.nextClassTime = document.getElementById('nextClassTime');
     this.nextClassRoom = document.getElementById('nextClassRoom');
@@ -593,45 +594,62 @@ class TEOSApp {
     const courses = TEOSStore.getCourses();
     const todayCode = this.getTodayCode();
 
-    // Find next class for today or upcoming
+    const now = new Date();
+    const currentHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    // Find next class for today (one that has not ended yet)
     const todayClasses = courses.filter(c => c.days.includes(todayCode))
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
-    if (todayClasses.length > 0) {
-      const firstClass = todayClasses[0];
-      this.nextClassName.textContent = firstClass.name;
-      this.nextClassTime.textContent = `Hora: ${this.formatTime12h(firstClass.startTime)} - ${this.formatTime12h(firstClass.endTime)}`;
-      this.nextClassRoom.textContent = `Aula: ${firstClass.room || 'No asignada'}`;
-      this.nextClassTeacher.textContent = `Profesor: ${firstClass.teacher || 'No asignado'}`;
+    const upcomingClass = todayClasses.find(c => c.endTime.localeCompare(currentHHMM) > 0);
+
+    if (upcomingClass) {
+      this.nextClassName.textContent = upcomingClass.name;
+      this.nextClassTime.textContent = `Hora: ${this.formatTime12h(upcomingClass.startTime)} - ${this.formatTime12h(upcomingClass.endTime)}`;
+      this.nextClassRoom.textContent = `Aula: ${upcomingClass.room || 'No asignada'}`;
+      this.nextClassTeacher.textContent = `Profesor: ${upcomingClass.teacher || 'No asignado'}`;
       if (this.nextClassCard) {
-        this.nextClassCard.style.backgroundColor = firstClass.color || '#007AFF';
-        this.nextClassCard.style.boxShadow = `0 8px 25px ${firstClass.color || '#007AFF'}40`;
-      }
-    } else if (courses.length > 0) {
-      const firstCourse = courses[0];
-      this.nextClassName.textContent = firstCourse.name;
-      this.nextClassTime.textContent = `Hora: ${this.formatTime12h(firstCourse.startTime)} - ${this.formatTime12h(firstCourse.endTime)}`;
-      this.nextClassRoom.textContent = `Aula: ${firstCourse.room || 'No asignada'}`;
-      this.nextClassTeacher.textContent = `Profesor: ${firstCourse.teacher || 'No asignado'}`;
-      if (this.nextClassCard) {
-        this.nextClassCard.style.backgroundColor = firstCourse.color || '#007AFF';
-        this.nextClassCard.style.boxShadow = `0 8px 25px ${firstCourse.color || '#007AFF'}40`;
+        this.nextClassCard.style.background = upcomingClass.color || '#007AFF';
+        this.nextClassCard.style.boxShadow = `0 8px 25px ${upcomingClass.color || '#007AFF'}40`;
       }
     } else {
-      this.nextClassName.textContent = 'Sin clases registradas';
-      this.nextClassTime.textContent = 'Añade un curso desde Mis Cursos';
+      if (this.nextClassCard) {
+        this.nextClassCard.style.background = '';
+        this.nextClassCard.style.boxShadow = '';
+      }
+      
+      if (courses.length === 0) {
+        this.nextClassName.textContent = 'Sin clases registradas';
+        this.nextClassTime.textContent = 'Añade un curso desde Mis Cursos';
+      } else {
+        this.nextClassName.textContent = 'Ya no tienes clases por hoy';
+        this.nextClassTime.textContent = '¡Disfruta tu tiempo libre!';
+      }
       this.nextClassRoom.textContent = '-';
       this.nextClassTeacher.textContent = '-';
     }
 
-    // Find next task
-    const tasks = TEOSStore.getTasks().filter(t => !t.completed);
-    if (tasks.length > 0) {
-      const firstTask = tasks[0];
+    // Find next task for the current day
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayYYYYMMDD = `${year}-${month}-${day}`;
+
+    const todayTasks = TEOSStore.getTasks().filter(t => !t.completed && t.dueDate === todayYYYYMMDD);
+
+    if (todayTasks.length > 0) {
+      todayTasks.sort((a, b) => {
+        if (a.dueTime && b.dueTime) return a.dueTime.localeCompare(b.dueTime);
+        if (a.dueTime) return -1;
+        if (b.dueTime) return 1;
+        return 0;
+      });
+
+      const firstTask = todayTasks[0];
       this.nextTaskTitle.textContent = firstTask.title;
       this.nextTaskTime.textContent = firstTask.dueTime ? `Hora: ${this.formatTime12h(firstTask.dueTime)}` : 'Pendiente hoy';
     } else {
-      this.nextTaskTitle.textContent = 'No tienes tareas pendientes';
+      this.nextTaskTitle.textContent = 'Ya no tienes tareas por hoy';
       this.nextTaskTime.textContent = '¡Buen trabajo!';
     }
   }
