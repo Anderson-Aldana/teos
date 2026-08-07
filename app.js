@@ -274,6 +274,7 @@ class TEOSApp {
     this.detailCourseDays = document.getElementById('detailCourseDays');
     this.detailCourseRoom = document.getElementById('detailCourseRoom');
     this.detailCourseTeacher = document.getElementById('detailCourseTeacher');
+    this.detailCourseAverage = document.getElementById('detailCourseAverage');
     this.btnOpenSimulatorFromDetail = document.getElementById('btnOpenSimulatorFromDetail');
     this.btnEditCourse = document.getElementById('btnEditCourse');
     this.btnDeleteCourse = document.getElementById('btnDeleteCourse');
@@ -508,14 +509,26 @@ class TEOSApp {
     });
 
     this.simNotaMinima.addEventListener('input', () => {
+      if (this.activeSimulatorData && this.currentCourseId) {
+        this.activeSimulatorData.notaMinima = parseFloat(this.simNotaMinima.value) || 10.5;
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
+      }
       this.calculateSimulatorResult();
     });
 
     this.simNotaObjetivoSelect.addEventListener('change', () => {
+      if (this.activeSimulatorData && this.currentCourseId) {
+        this.activeSimulatorData.notaObjetivoSelect = this.simNotaObjetivoSelect.value;
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
+      }
       this.calculateSimulatorResult();
     });
 
     this.simUsarEnteros.addEventListener('change', () => {
+      if (this.activeSimulatorData && this.currentCourseId) {
+        this.activeSimulatorData.usarEnteros = this.simUsarEnteros.checked;
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
+      }
       this.calculateSimulatorResult();
     });
 
@@ -683,6 +696,32 @@ class TEOSApp {
     });
   }
 
+  calculateCourseAverage(course) {
+    if (!course || !course.simulator || !course.simulator.secciones) return '0.00';
+    
+    let notaActual = 0;
+    const secciones = course.simulator.secciones;
+
+    secciones.forEach(sec => {
+      const peso = parseFloat(sec.peso) || 0;
+      const numExamenes = sec.examenes ? sec.examenes.length : 1;
+      let sumaNotasSec = 0;
+
+      if (sec.examenes) {
+        sec.examenes.forEach(ex => {
+          if (ex.realizado && ex.nota !== '') {
+            sumaNotasSec += parseFloat(ex.nota);
+          }
+        });
+      }
+
+      const promedioSeccion = sumaNotasSec / numExamenes;
+      notaActual += promedioSeccion * (peso / 100);
+    });
+
+    return notaActual.toFixed(2);
+  }
+
   /* --- 3. MIS CURSOS VIEW --- */
   renderCoursesView() {
     const courses = TEOSStore.getCourses();
@@ -700,6 +739,7 @@ class TEOSApp {
 
     courses.forEach(c => {
       const daysText = c.days && c.days.length > 0 ? c.days.join(', ') : 'Sin días';
+      const avg = this.calculateCourseAverage(c);
       const card = document.createElement('div');
       card.className = 'course-card';
       card.innerHTML = `
@@ -734,6 +774,11 @@ class TEOSApp {
     this.detailCourseRoom.textContent = course.room || 'No especificada';
     this.detailCourseTeacher.textContent = course.teacher || 'No especificado';
 
+    const avg = this.calculateCourseAverage(course);
+    if (this.detailCourseAverage) {
+      this.detailCourseAverage.textContent = `${avg} / 20`;
+    }
+
     this.navigateToScreen('screenDetalleCurso');
   }
 
@@ -766,7 +811,8 @@ class TEOSApp {
     this.activeSimulatorData = simData;
 
     this.simNumSecciones.value = simData.numSecciones || 4;
-    this.simNotaMinima.value = simData.notaMinima || 10.5;
+    this.simNotaMinima.value = simData.notaMinima !== undefined ? simData.notaMinima : 10.5;
+    this.simNotaObjetivoSelect.value = simData.notaObjetivoSelect || 'minima';
     this.simUsarEnteros.checked = !!simData.usarEnteros;
 
     this.renderSimulatorSections(simData);
