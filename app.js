@@ -210,6 +210,7 @@ class TEOSApp {
 
     // Configuración Screen
     this.configThemeSelect = document.getElementById('configThemeSelect');
+    this.btnInstallPWA = document.getElementById('btnInstallPWA');
     this.btnExportData = document.getElementById('btnExportData');
     this.btnImportDataTrigger = document.getElementById('btnImportDataTrigger');
     this.importFileInput = document.getElementById('importFileInput');
@@ -241,11 +242,14 @@ class TEOSApp {
     this.btnCancelTaskModal = document.getElementById('btnCancelTaskModal');
     this.btnSaveTaskModal = document.getElementById('btnSaveTaskModal');
 
-    // iOS Custom Alert / Dialog Modal
+    // iOS Custom Alert & PWA Install Modals
     this.iosAlertModal = document.getElementById('iosAlertModal');
     this.iosAlertTitle = document.getElementById('iosAlertTitle');
     this.iosAlertMessage = document.getElementById('iosAlertMessage');
     this.iosAlertActions = document.getElementById('iosAlertActions');
+
+    this.iosInstallModal = document.getElementById('iosInstallModal');
+    this.btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
   }
 
   /* --- Custom iOS Alert & Confirm Modals --- */
@@ -492,6 +496,48 @@ class TEOSApp {
         }
       });
     });
+
+    // PWA Installation Handling
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+    });
+
+    if (this.btnInstallPWA) {
+      this.btnInstallPWA.addEventListener('click', () => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (isStandalone) {
+          this.showAlert({
+            title: 'App Ya Instalada',
+            message: 'TEOS ya está instalada en tu dispositivo y ejecutándose como App.'
+          });
+          return;
+        }
+
+        if (this.deferredPrompt) {
+          this.deferredPrompt.prompt();
+          this.deferredPrompt.userChoice.then((choice) => {
+            if (choice.outcome === 'accepted') {
+              console.log('Instalación PWA aceptada');
+            }
+            this.deferredPrompt = null;
+          });
+        } else {
+          // Show iOS / Safari step-by-step modal guide
+          if (this.iosInstallModal) {
+            this.iosInstallModal.classList.add('active');
+          }
+        }
+      });
+    }
+
+    if (this.btnCloseInstallModal) {
+      this.btnCloseInstallModal.addEventListener('click', () => {
+        if (this.iosInstallModal) {
+          this.iosInstallModal.classList.remove('active');
+        }
+      });
+    }
   }
 
   navigateToScreen(screenId) {
