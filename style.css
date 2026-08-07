@@ -356,7 +356,7 @@ html, body {
 }
 
 .ios-btn-simulator {
-  background: linear-gradient(135deg, var(--ios-indigo), var(--ios-purple));
+  background-color: var(--ios-blue);
   color: #FFFFFF;
 }
 
