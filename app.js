@@ -15,107 +15,10 @@ const DAYS_MAP = [
   { code: 'DO', name: 'Domingo', short: 'Dom' }
 ];
 
-// Initial mock data based on user sketch & requirements
-const MOCK_INITIAL_DATA = {
-  courses: [
-    {
-      id: 'course-calc-3',
-      name: 'Cálculo III',
-      startTime: '15:40',
-      endTime: '17:20',
-      days: ['JU'],
-      room: 'P11-A15',
-      teacher: 'Jorge Luna',
-      color: '#007AFF',
-      simulator: {
-        numSecciones: 4,
-        notaMinima: 10.5,
-        usarEnteros: false,
-        secciones: [
-          {
-            nombre: 'Practicas calificadas',
-            peso: 40,
-            numExamenes: 4,
-            examenes: [
-              { nota: 15, realizado: true },
-              { nota: '', realizado: false },
-              { nota: '', realizado: false },
-              { nota: '', realizado: false }
-            ]
-          },
-          {
-            nombre: 'Examen Parcial',
-            peso: 25,
-            numExamenes: 1,
-            examenes: [{ nota: '', realizado: false }]
-          },
-          {
-            nombre: 'Examen Final',
-            peso: 25,
-            numExamenes: 1,
-            examenes: [{ nota: '', realizado: false }]
-          },
-          {
-            nombre: 'Trabajo Encargado',
-            peso: 10,
-            numExamenes: 1,
-            examenes: [{ nota: '', realizado: false }]
-          }
-        ]
-      }
-    },
-    {
-      id: 'course-econ-gen',
-      name: 'Economía General',
-      startTime: '17:30',
-      endTime: '19:10',
-      days: ['JU'],
-      room: 'P11-A09',
-      teacher: 'Carlos Pérez',
-      color: '#5856D6',
-      simulator: null
-    },
-    {
-      id: 'course-fis-2',
-      name: 'Física II',
-      startTime: '08:00',
-      endTime: '10:00',
-      days: ['MA', 'VI'],
-      room: 'P02-B04',
-      teacher: 'María Silva',
-      color: '#FF9500',
-      simulator: null
-    },
-    {
-      id: 'course-quim-fis',
-      name: 'Química Física',
-      startTime: '10:00',
-      endTime: '12:00',
-      days: ['MI', 'SA'],
-      room: 'LAB-03',
-      teacher: 'Ana Torres',
-      color: '#34C759',
-      simulator: null
-    }
-  ],
-  tasks: [
-    {
-      id: 'task-1',
-      title: 'Estudiar cálculo',
-      courseId: 'course-calc-3',
-      dueDate: new Date().toISOString().split('T')[0],
-      dueTime: '20:00',
-      completed: false
-    },
-    {
-      id: 'task-2',
-      title: 'Estudiar economía',
-      courseId: 'course-econ-gen',
-      dueDate: new Date().toISOString().split('T')[0],
-      dueTime: '21:00',
-      completed: false
-    }
-  ]
+// Initial empty state for user custom data
+const INITIAL_EMPTY_DATA = {
+  courses: [],
+  tasks: []
 };
 
 /* --- Data Store Module --- */
@@ -124,13 +27,19 @@ class TEOSStore {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        this.saveData(MOCK_INITIAL_DATA);
-        return MOCK_INITIAL_DATA;
+        this.saveData(INITIAL_EMPTY_DATA);
+        return INITIAL_EMPTY_DATA;
       }
-      return JSON.parse(raw);
+      const data = JSON.parse(raw);
+      // Clean previous mock data if present
+      if (data && data.courses && data.courses.some(c => c.id && c.id.startsWith('course-calc-3'))) {
+        this.saveData(INITIAL_EMPTY_DATA);
+        return INITIAL_EMPTY_DATA;
+      }
+      return data;
     } catch (e) {
       console.error('Error al cargar LocalStorage:', e);
-      return MOCK_INITIAL_DATA;
+      return INITIAL_EMPTY_DATA;
     }
   }
 
@@ -1427,4 +1336,11 @@ class TEOSApp {
 // Initialize TEOS App when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   window.teosApp = new TEOSApp();
+
+  // Register PWA Service Worker for Offline capability
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('TEOS PWA Service Worker registrado con éxito:', reg.scope))
+      .catch(err => console.error('Error al registrar Service Worker:', err));
+  }
 });
