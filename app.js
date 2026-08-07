@@ -229,7 +229,8 @@ class TEOSStore {
 class TEOSApp {
   constructor() {
     this.currentCourseId = null;
-    this.selectedScheduleDay = this.getTodayCode();
+    this.activeScheduleDate = new Date();
+    this.selectedScheduleDay = this.getDayCodeFromDate(this.activeScheduleDate);
     this.activeTaskFilter = 'pending';
 
     this.initElements();
@@ -261,6 +262,8 @@ class TEOSApp {
     // Horario Screen
     this.dayTabsContainer = document.getElementById('dayTabsContainer');
     this.scheduleListContainer = document.getElementById('scheduleListContainer');
+    this.btnOpenCalendarPicker = document.getElementById('btnOpenCalendarPicker');
+    this.calendarPickerInput = document.getElementById('calendarPickerInput');
 
     // Cursos Screen
     this.coursesListContainer = document.getElementById('coursesListContainer');
@@ -499,6 +502,18 @@ class TEOSApp {
       });
     });
 
+    if (this.calendarPickerInput) {
+      this.calendarPickerInput.addEventListener('change', (e) => {
+        if (e.target.value) {
+          const parts = e.target.value.split('-');
+          const selDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          this.activeScheduleDate = selDate;
+          this.selectedScheduleDay = this.getDayCodeFromDate(selDate);
+          this.renderScheduleView();
+        }
+      });
+    }
+
     // Simulador Screen Events
     this.btnBackFromSimulator.addEventListener('click', () => {
       this.navigateToScreen('screenDetalleCurso');
@@ -653,23 +668,52 @@ class TEOSApp {
     }
   }
 
+  getDayCodeFromDate(date) {
+    const dayIndex = date.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    const map = ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA'];
+    return map[dayIndex];
+  }
+
+  getFiveDayWindow(centerDate) {
+    const days = [];
+    for (let i = -2; i <= 2; i++) {
+      const d = new Date(centerDate);
+      d.setDate(d.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }
+
   /* --- 2. HORARIO VIEW --- */
   renderScheduleView() {
-    // Render Day Selector Tabs
+    // Render 5-Day Segmented Bar (Matching Sketch)
     this.dayTabsContainer.innerHTML = '';
-    DAYS_MAP.forEach(d => {
-      const isSelected = d.code === this.selectedScheduleDay;
-      const tabCard = document.createElement('div');
-      tabCard.className = `day-tab-card ${isSelected ? 'active' : ''}`;
-      tabCard.innerHTML = `
-        <span class="day-name">${d.short}</span>
-        <span class="day-num">${d.code}</span>
+    const fiveDays = this.getFiveDayWindow(this.activeScheduleDate);
+
+    fiveDays.forEach(dayObj => {
+      const code = this.getDayCodeFromDate(dayObj);
+      const isToday = dayObj.toDateString() === new Date().toDateString();
+      const isSelected = dayObj.toDateString() === this.activeScheduleDate.toDateString();
+
+      const shortNames = { 'LU': 'LU', 'MA': 'MA', 'MI': 'MI', 'JU': 'JU', 'VI': 'VI', 'SA': 'SA', 'DO': 'DO' };
+      const topLabel = isToday ? 'HOY' : shortNames[code];
+
+      const dd = String(dayObj.getDate()).padStart(2, '0');
+      const mm = String(dayObj.getMonth() + 1).padStart(2, '0');
+      const bottomLabel = `${dd}.${mm}`;
+
+      const segTab = document.createElement('div');
+      segTab.className = `segmented-day-tab ${isSelected ? 'active' : ''}`;
+      segTab.innerHTML = `
+        <span class="seg-day-name">${topLabel}</span>
+        <span class="seg-day-date">${bottomLabel}</span>
       `;
-      tabCard.addEventListener('click', () => {
-        this.selectedScheduleDay = d.code;
+      segTab.addEventListener('click', () => {
+        this.activeScheduleDate = dayObj;
+        this.selectedScheduleDay = code;
         this.renderScheduleView();
       });
-      this.dayTabsContainer.appendChild(tabCard);
+      this.dayTabsContainer.appendChild(segTab);
     });
 
     // Render Timeline Items for Selected Day

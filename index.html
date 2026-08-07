@@ -102,12 +102,18 @@
 
       <!-- SCREEN 2: HORARIO -->
       <section class="screen" id="screenHorario">
-        <div class="section-title-wrapper">
+        <div class="section-title-wrapper flex-between">
           <h2>Horario</h2>
+          <div class="calendar-btn-wrapper" style="position: relative;">
+            <button class="icon-btn calendar-btn" id="btnOpenCalendarPicker" aria-label="Seleccionar fecha">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </button>
+            <input type="date" id="calendarPickerInput" style="position: absolute; top:0; right:0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+          </div>
         </div>
 
-        <!-- Days Bar Selector -->
-        <div class="day-tabs-scroll" id="dayTabsContainer">
+        <!-- 5-Day Segmented Selector Box -->
+        <div class="segmented-day-bar" id="dayTabsContainer">
           <!-- Populated by JS -->
         </div>
 
