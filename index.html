@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>TEOS - Administración de Cursos, Horario y Tareas</title>
+  <meta name="description" content="Aplicación personal para gestionar tus cursos universitarios, horarios, tareas y simulación de notas con estética iOS.">
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-auto">
+  <div class="app-viewport">
+    
+    <!-- Header iOS Header Bar -->
+    <header class="app-header" id="appHeader">
+      <div class="header-left">
+        <button class="icon-btn profile-btn" id="btnProfile" aria-label="Perfil de usuario">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+      </div>
+      <div class="header-center">
+        <h1 class="brand-title" id="headerTitle">TEOS</h1>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn settings-btn" id="btnHeaderSettings" aria-label="Configuración">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Screens Container -->
+    <main class="app-content">
+
+      <!-- SCREEN 1: INICIO (DASHBOARD) -->
+      <section class="screen active" id="screenInicio">
+        <div class="screen-header-block">
+          <p class="date-subtitle" id="currentDateDisplay">Cargando fecha...</p>
+        </div>
+
+        <div class="ios-card next-item-card" id="nextClassCard">
+          <div class="card-tag">Tu próxima clase</div>
+          <div class="card-body" id="nextClassBody">
+            <h2 class="card-title" id="nextClassName">Cálculo III</h2>
+            <div class="info-row">
+              <span class="info-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </span>
+              <span class="info-text" id="nextClassTime">Hora: 3:40 PM - 5:20 PM</span>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </span>
+              <span class="info-text" id="nextClassRoom">Aula: P11-A15</span>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </span>
+              <span class="info-text" id="nextClassTeacher">Profesor: Jorge Luna</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ios-card next-item-card" id="nextTaskCard">
+          <div class="card-tag">Tu próxima tarea</div>
+          <div class="card-body" id="nextTaskBody">
+            <h2 class="card-title" id="nextTaskTitle">Estudiar cálculo</h2>
+            <div class="info-row">
+              <span class="info-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </span>
+              <span class="info-text" id="nextTaskTime">Hora: 8:00 PM - 9:00 PM</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-btn-wrapper">
+          <button class="ios-btn ios-btn-primary full-width" id="btnOpenAddTaskFromHome">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Añadir Tarea
+          </button>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: HORARIO -->
+      <section class="screen" id="screenHorario">
+        <div class="section-title-wrapper">
+          <h2>Horario</h2>
+        </div>
+
+        <!-- Days Bar Selector -->
+        <div class="day-tabs-scroll" id="dayTabsContainer">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="schedule-timeline" id="scheduleListContainer">
+          <!-- List of classes and scheduled items for selected day -->
+        </div>
+      </section>
+
+      <!-- SCREEN 3: MIS CURSOS -->
+      <section class="screen" id="screenCursos">
+        <div class="section-title-wrapper flex-between">
+          <h2>Mis Cursos</h2>
+          <button class="icon-btn add-btn" id="btnOpenAddCourse" aria-label="Añadir Curso">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+
+        <div class="courses-grid" id="coursesListContainer">
+          <!-- List of Course Cards -->
+        </div>
+      </section>
+
+      <!-- SCREEN 4: DETALLE DEL CURSO -->
+      <section class="screen" id="screenDetalleCurso">
+        <div class="nav-back-wrapper">
+          <button class="ios-link-btn" id="btnBackToCourses">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Cursos
+          </button>
+        </div>
+
+        <div class="course-detail-header" id="courseDetailHeader">
+          <h2 class="course-detail-name" id="detailCourseName">Cálculo III</h2>
+          <span class="color-badge" id="detailCourseColorBadge"></span>
+        </div>
+
+        <div class="ios-card detail-info-card">
+          <div class="info-row">
+            <span class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+            <div>
+              <span class="info-label">Horario</span>
+              <p class="info-value" id="detailCourseTime">3:40 PM - 5:20 PM</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </span>
+            <div>
+              <span class="info-label">Días</span>
+              <p class="info-value" id="detailCourseDays">Lunes, Jueves</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </span>
+            <div>
+              <span class="info-label">Aula</span>
+              <p class="info-value" id="detailCourseRoom">P11-A15</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            <div>
+              <span class="info-label">Profesor</span>
+              <p class="info-value" id="detailCourseTeacher">Jorge Luna</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-stack">
+          <button class="ios-btn ios-btn-simulator full-width" id="btnOpenSimulatorFromDetail">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>
+            Simular Notas
+          </button>
+          
+          <div class="secondary-actions-row">
+            <button class="ios-btn ios-btn-secondary" id="btnEditCourse">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              Editar curso
+            </button>
+            <button class="ios-btn ios-btn-danger" id="btnDeleteCourse">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              Eliminar curso
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: SIMULADOR DE NOTAS -->
+      <section class="screen" id="screenSimulador">
+        <div class="nav-back-wrapper">
+          <button class="ios-link-btn" id="btnBackFromSimulator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Volver al curso
+          </button>
+        </div>
+
+        <div class="section-title-wrapper">
+          <h2 id="simulatorCourseTitle">Simulador de Notas</h2>
+        </div>
+
+        <div class="ios-card simulator-controls-card">
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="simNumSecciones">N° de Secciones</label>
+              <input type="number" id="simNumSecciones" class="ios-input" min="1" max="10" value="4">
+            </div>
+            <div class="form-group">
+              <label for="simNotaMinima">Nota mínima / Objetivo</label>
+              <input type="number" id="simNotaMinima" class="ios-input" min="0" max="20" step="0.5" value="10.5">
+            </div>
+          </div>
+
+          <div class="form-row-grid align-center">
+            <div class="form-group">
+              <label for="simNotaObjetivoSelect">Tipo de Objetivo</label>
+              <select id="simNotaObjetivoSelect" class="ios-select">
+                <option value="minima">Aprobar (Nota mínima)</option>
+                <option value="12">Alcanzar 12.0</option>
+                <option value="14">Alcanzar 14.0</option>
+                <option value="16">Alcanzar 16.0</option>
+                <option value="18">Alcanzar 18.0</option>
+                <option value="20">Alcanzar 20.0</option>
+              </select>
+            </div>
+            <div class="form-group toggle-group">
+              <label for="simUsarEnteros">Usar notas enteras</label>
+              <label class="ios-switch">
+                <input type="checkbox" id="simUsarEnteros">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secciones dinámicas -->
+        <div id="simSeccionesContainer" class="sections-stack">
+          <!-- Dynamic section cards generated by JS -->
+        </div>
+
+        <!-- Resultado del simulador -->
+        <div class="ios-card result-card" id="simResultCard">
+          <div class="result-header">
+            <h3>Resultado de la Simulación</h3>
+          </div>
+          <div id="simResultBody" class="result-body">
+            <!-- Summary output generated by calculation logic -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 6: TAREAS -->
+      <section class="screen" id="screenTareas">
+        <div class="section-title-wrapper flex-between">
+          <h2>Tareas</h2>
+          <button class="ios-btn ios-btn-primary btn-sm" id="btnOpenAddTaskFromTareas">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Añadir Tarea
+          </button>
+        </div>
+
+        <div class="tasks-filter-bar">
+          <button class="chip active" data-filter="pending">Pendientes</button>
+          <button class="chip" data-filter="completed">Completadas</button>
+          <button class="chip" data-filter="all">Todas</button>
+        </div>
+
+        <div class="tasks-list" id="tasksListContainer">
+          <!-- Task items populated by JS -->
+        </div>
+      </section>
+
+      <!-- SCREEN 7: CONFIGURACIÓN -->
+      <section class="screen" id="screenConfiguracion">
+        <div class="section-title-wrapper">
+          <h2>Configuración</h2>
+        </div>
+
+        <div class="ios-group-container">
+          <div class="group-header">Apariencia</div>
+          <div class="ios-list-group">
+            <div class="ios-list-item">
+              <span class="item-label">Tema de color</span>
+              <select id="configThemeSelect" class="ios-select inline-select">
+                <option value="auto">Sistema</option>
+                <option value="light">Claro</option>
+                <option value="dark">Oscuro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ios-group-container">
+          <div class="group-header">Gestión de Datos</div>
+          <div class="ios-list-group">
+            <button class="ios-list-item clickable" id="btnExportData">
+              <div class="item-left">
+                <span class="item-icon icon-blue">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </span>
+                <span class="item-label">Exportar copia de seguridad</span>
+              </div>
+              <span class="item-chevron">›</span>
+            </button>
+
+            <button class="ios-list-item clickable" id="btnImportDataTrigger">
+              <div class="item-left">
+                <span class="item-icon icon-green">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </span>
+                <span class="item-label">Importar datos</span>
+              </div>
+              <input type="file" id="importFileInput" accept=".json" style="display:none;">
+              <span class="item-chevron">›</span>
+            </button>
+
+            <button class="ios-list-item clickable text-danger" id="btnClearData">
+              <div class="item-left">
+                <span class="item-icon icon-red">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </span>
+                <span class="item-label">Borrar todo</span>
+              </div>
+              <span class="item-chevron">›</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="app-version-footer">
+          <p>TEOS iOS Web App v1.0</p>
+          <p class="subtle-text">Diseñado para gestión académica eficiente</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL 1: AÑADIR / EDITAR CURSO -->
+    <div class="ios-modal-overlay" id="modalCourse">
+      <div class="ios-modal-sheet">
+        <div class="modal-header">
+          <button class="ios-link-btn" id="btnCancelCourseModal">Cancelar</button>
+          <h3 id="modalCourseTitle">Añadir Curso</h3>
+          <button class="ios-link-btn bold" id="btnSaveCourseModal">Guardar</button>
+        </div>
+
+        <form id="formCourse" class="modal-form">
+          <input type="hidden" id="courseIdHidden">
+          
+          <div class="form-group">
+            <label for="courseNameInput">Nombre del Curso</label>
+            <input type="text" id="courseNameInput" class="ios-input" placeholder="ej. Cálculo III" required>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="courseStartTimeInput">Hora Inicio</label>
+              <input type="time" id="courseStartTimeInput" class="ios-input" required>
+            </div>
+            <div class="form-group">
+              <label for="courseEndTimeInput">Hora Fin</label>
+              <input type="time" id="courseEndTimeInput" class="ios-input" required>
+            </div>
+          </div>
+
+          <!-- Días de la semana (Requisito explícito del usuario) -->
+          <div class="form-group">
+            <label>Días de la Semana</label>
+            <div class="days-chips-selector" id="courseDaysChips">
+              <button type="button" class="day-chip" data-day="LU">Lun</button>
+              <button type="button" class="day-chip" data-day="MA">Mar</button>
+              <button type="button" class="day-chip" data-day="MI">Mié</button>
+              <button type="button" class="day-chip" data-day="JU">Jue</button>
+              <button type="button" class="day-chip" data-day="VI">Vie</button>
+              <button type="button" class="day-chip" data-day="SA">Sáb</button>
+              <button type="button" class="day-chip" data-day="DO">Dom</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="courseRoomInput">Aula</label>
+            <input type="text" id="courseRoomInput" class="ios-input" placeholder="ej. P11-A15">
+          </div>
+
+          <div class="form-group">
+            <label for="courseTeacherInput">Profesor</label>
+            <input type="text" id="courseTeacherInput" class="ios-input" placeholder="ej. Jorge Luna">
+          </div>
+
+          <div class="form-group">
+            <label>Color distintivo</label>
+            <div class="color-picker-row" id="colorPickerRow">
+              <button type="button" class="color-dot active" data-color="#007AFF" style="background: #007AFF;"></button>
+              <button type="button" class="color-dot" data-color="#5856D6" style="background: #5856D6;"></button>
+              <button type="button" class="color-dot" data-color="#AF52DE" style="background: #AF52DE;"></button>
+              <button type="button" class="color-dot" data-color="#FF2D55" style="background: #FF2D55;"></button>
+              <button type="button" class="color-dot" data-color="#FF9500" style="background: #FF9500;"></button>
+              <button type="button" class="color-dot" data-color="#34C759" style="background: #34C759;"></button>
+              <button type="button" class="color-dot" data-color="#30B0C7" style="background: #30B0C7;"></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 2: AÑADIR / EDITAR TAREA -->
+    <div class="ios-modal-overlay" id="modalTask">
+      <div class="ios-modal-sheet">
+        <div class="modal-header">
+          <button class="ios-link-btn" id="btnCancelTaskModal">Cancelar</button>
+          <h3 id="modalTaskTitle">Añadir Tarea</h3>
+          <button class="ios-link-btn bold" id="btnSaveTaskModal">Guardar</button>
+        </div>
+
+        <form id="formTask" class="modal-form">
+          <input type="hidden" id="taskIdHidden">
+
+          <div class="form-group">
+            <label for="taskTitleInput">Descripción de la Tarea</label>
+            <input type="text" id="taskTitleInput" class="ios-input" placeholder="ej. Estudiar cálculo" required>
+          </div>
+
+          <div class="form-group">
+            <label for="taskCourseSelect">Curso (Opcional)</label>
+            <select id="taskCourseSelect" class="ios-select">
+              <option value="">-- Sin curso asignado --</option>
+            </select>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="taskDueDateInput">Fecha</label>
+              <input type="date" id="taskDueDateInput" class="ios-input">
+            </div>
+            <div class="form-group">
+              <label for="taskDueTimeInput">Hora de entrega</label>
+              <input type="time" id="taskDueTimeInput" class="ios-input">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- iOS Bottom Navigation Tab Bar -->
+    <nav class="ios-tab-bar" id="appTabBar">
+      <button class="tab-item active" data-target="screenInicio">
+        <span class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </span>
+        <span class="tab-label">Inicio</span>
+      </button>
+
+      <button class="tab-item" data-target="screenHorario">
+        <span class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </span>
+        <span class="tab-label">Horario</span>
+      </button>
+
+      <button class="tab-item" data-target="screenCursos">
+        <span class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        </span>
+        <span class="tab-label">Mis Cursos</span>
+      </button>
+
+      <button class="tab-item" data-target="screenTareas">
+        <span class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        </span>
+        <span class="tab-label">Tareas</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
