@@ -620,12 +620,20 @@ class TEOSApp {
       this.nextClassTime.textContent = `Hora: ${this.formatTime12h(firstClass.startTime)} - ${this.formatTime12h(firstClass.endTime)}`;
       this.nextClassRoom.textContent = `Aula: ${firstClass.room || 'No asignada'}`;
       this.nextClassTeacher.textContent = `Profesor: ${firstClass.teacher || 'No asignado'}`;
+      if (this.nextClassCard) {
+        this.nextClassCard.style.backgroundColor = firstClass.color || '#007AFF';
+        this.nextClassCard.style.boxShadow = `0 8px 25px ${firstClass.color || '#007AFF'}40`;
+      }
     } else if (courses.length > 0) {
       const firstCourse = courses[0];
       this.nextClassName.textContent = firstCourse.name;
       this.nextClassTime.textContent = `Hora: ${this.formatTime12h(firstCourse.startTime)} - ${this.formatTime12h(firstCourse.endTime)}`;
       this.nextClassRoom.textContent = `Aula: ${firstCourse.room || 'No asignada'}`;
       this.nextClassTeacher.textContent = `Profesor: ${firstCourse.teacher || 'No asignado'}`;
+      if (this.nextClassCard) {
+        this.nextClassCard.style.backgroundColor = firstCourse.color || '#007AFF';
+        this.nextClassCard.style.boxShadow = `0 8px 25px ${firstCourse.color || '#007AFF'}40`;
+      }
     } else {
       this.nextClassName.textContent = 'Sin clases registradas';
       this.nextClassTime.textContent = 'Añade un curso desde Mis Cursos';
@@ -739,14 +747,24 @@ class TEOSApp {
 
     courses.forEach(c => {
       const daysText = c.days && c.days.length > 0 ? c.days.join(', ') : 'Sin días';
-      const avg = this.calculateCourseAverage(c);
       const card = document.createElement('div');
-      card.className = 'course-card';
+      card.className = 'shortcut-card course-shortcut';
+      card.style.backgroundColor = c.color || '#007AFF';
+      card.style.boxShadow = `0 6px 20px ${c.color || '#007AFF'}35`;
       card.innerHTML = `
-        <div class="course-card-color-stripe" style="background-color: ${c.color || '#007AFF'};"></div>
-        <div class="course-card-title">${c.name}</div>
-        <div class="course-card-sub">🕒 ${this.formatTime12h(c.startTime)} - ${this.formatTime12h(c.endTime)} (${daysText})</div>
-        <div class="course-card-sub">📍 ${c.room || 'Aula no def.'} | 👨‍🏫 ${c.teacher || 'Profesor no def.'}</div>
+        <div class="shortcut-header compact-header">
+          <div class="shortcut-title-group">
+            <span class="shortcut-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            </span>
+            <h3 class="shortcut-title inline-title">${c.name}</h3>
+          </div>
+          <div class="shortcut-dots">•••</div>
+        </div>
+        <div class="shortcut-body-compact">
+          <div class="shortcut-detail-text">🕒 ${this.formatTime12h(c.startTime)} - ${this.formatTime12h(c.endTime)} (${daysText})</div>
+          <div class="shortcut-detail-text">📍 ${c.room || 'Aula no def.'} | 👨‍🏫 ${c.teacher || 'Profesor no def.'}</div>
+        </div>
       `;
       card.addEventListener('click', () => {
         this.openCourseDetail(c.id);
