@@ -688,29 +688,143 @@ input:checked + .slider:before {
 /* Result Card */
 .result-card {
   background: var(--bg-secondary);
-  border: 1.5px solid var(--ios-blue);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
 }
 
 .result-header h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--ios-blue);
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
-.result-body p {
-  font-size: 15px;
-  margin-bottom: 6px;
+.result-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.result-body .advertencia {
-  color: var(--ios-red);
+.stat-card {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.stat-label {
+  font-size: 10px;
   font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
 }
 
-.result-body .felicidades {
+.stat-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.stat-value.primary {
+  color: var(--ios-blue);
+}
+
+.stat-value.goal {
+  color: var(--ios-purple);
+}
+
+.stat-value.max {
   color: var(--ios-green);
+}
+
+.status-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 14px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.35;
+}
+
+.status-banner.success {
+  background-color: rgba(52, 199, 89, 0.12);
+  color: var(--ios-green);
+  border: 1px solid rgba(52, 199, 89, 0.25);
+}
+
+.status-banner.warning {
+  background-color: rgba(255, 59, 48, 0.12);
+  color: var(--ios-red);
+  border: 1px solid rgba(255, 59, 48, 0.25);
+}
+
+.status-banner.info {
+  background-color: rgba(0, 122, 255, 0.12);
+  color: var(--ios-blue);
+  border: 1px solid rgba(0, 122, 255, 0.25);
+}
+
+.result-subtitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.result-exams-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exam-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.exam-result-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.exam-result-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.exam-result-sec {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.badge-grade {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(0, 122, 255, 0.12);
+  color: var(--ios-blue);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  white-space: nowrap;
+}
+
+.badge-grade.danger {
+  background: rgba(255, 59, 48, 0.12);
+  color: var(--ios-red);
+  border: 1px solid rgba(255, 59, 48, 0.2);
 }
 
 /* --- Tareas View --- */

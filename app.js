@@ -286,6 +286,8 @@ class TEOSApp {
     this.simNotaObjetivoSelect = document.getElementById('simNotaObjetivoSelect');
     this.simUsarEnteros = document.getElementById('simUsarEnteros');
     this.simSeccionesContainer = document.getElementById('simSeccionesContainer');
+    this.btnCalculateSimulation = document.getElementById('btnCalculateSimulation');
+    this.simResultCard = document.getElementById('simResultCard');
     this.simResultBody = document.getElementById('simResultBody');
 
     // Tareas Screen
@@ -515,6 +517,11 @@ class TEOSApp {
 
     this.simUsarEnteros.addEventListener('change', () => {
       this.calculateSimulatorResult();
+    });
+
+    this.btnCalculateSimulation.addEventListener('click', () => {
+      this.calculateSimulatorResult();
+      this.simResultCard.scrollIntoView({ behavior: 'smooth' });
     });
 
     // Configuration Screen Events
@@ -756,6 +763,8 @@ class TEOSApp {
       TEOSStore.saveCourseSimulator(courseId, simData);
     }
 
+    this.activeSimulatorData = simData;
+
     this.simNumSecciones.value = simData.numSecciones || 4;
     this.simNotaMinima.value = simData.notaMinima || 10.5;
     this.simUsarEnteros.checked = !!simData.usarEnteros;
@@ -770,8 +779,7 @@ class TEOSApp {
     if (numSecciones < 1) numSecciones = 1;
     if (numSecciones > 10) numSecciones = 10;
 
-    const course = TEOSStore.getCourseById(this.currentCourseId);
-    let simData = course.simulator || { secciones: [] };
+    let simData = this.activeSimulatorData || { secciones: [] };
 
     // Auto set default 4 sections if count is 4
     if (numSecciones === 4 && (!simData.secciones || simData.secciones.length !== 4)) {
@@ -801,6 +809,7 @@ class TEOSApp {
     }
 
     simData.numSecciones = numSecciones;
+    this.activeSimulatorData = simData;
     TEOSStore.saveCourseSimulator(this.currentCourseId, simData);
 
     this.renderSimulatorSections(simData);
@@ -809,6 +818,7 @@ class TEOSApp {
 
   renderSimulatorSections(simData) {
     this.simSeccionesContainer.innerHTML = '';
+    this.activeSimulatorData = simData;
 
     simData.secciones.forEach((sec, sIdx) => {
       const secCard = document.createElement('div');
@@ -843,8 +853,8 @@ class TEOSApp {
     this.simSeccionesContainer.querySelectorAll('.sec-name-input').forEach(inp => {
       inp.addEventListener('input', (e) => {
         const idx = parseInt(e.target.getAttribute('data-sidx'));
-        simData.secciones[idx].nombre = e.target.value;
-        TEOSStore.saveCourseSimulator(this.currentCourseId, simData);
+        this.activeSimulatorData.secciones[idx].nombre = e.target.value;
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
         this.calculateSimulatorResult();
       });
     });
@@ -852,8 +862,8 @@ class TEOSApp {
     this.simSeccionesContainer.querySelectorAll('.sec-peso-input').forEach(inp => {
       inp.addEventListener('input', (e) => {
         const idx = parseInt(e.target.getAttribute('data-sidx'));
-        simData.secciones[idx].peso = parseFloat(e.target.value) || 0;
-        TEOSStore.saveCourseSimulator(this.currentCourseId, simData);
+        this.activeSimulatorData.secciones[idx].peso = parseFloat(e.target.value) || 0;
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
         this.calculateSimulatorResult();
       });
     });
@@ -864,9 +874,9 @@ class TEOSApp {
         let count = parseInt(e.target.value) || 1;
         if (count < 1) count = 1;
         
-        simData.secciones[idx].numExamenes = count;
+        this.activeSimulatorData.secciones[idx].numExamenes = count;
         // Resize examenes array
-        const currentEx = simData.secciones[idx].examenes || [];
+        const currentEx = this.activeSimulatorData.secciones[idx].examenes || [];
         const newEx = [];
         for (let j = 0; j < count; j++) {
           if (currentEx[j]) {
@@ -875,10 +885,10 @@ class TEOSApp {
             newEx.push({ nota: '', realizado: false });
           }
         }
-        simData.secciones[idx].examenes = newEx;
-        TEOSStore.saveCourseSimulator(this.currentCourseId, simData);
+        this.activeSimulatorData.secciones[idx].examenes = newEx;
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
 
-        this.renderExamRows(idx, simData.secciones[idx]);
+        this.renderExamRows(idx, this.activeSimulatorData.secciones[idx]);
         this.calculateSimulatorResult();
       });
     });
@@ -914,14 +924,14 @@ class TEOSApp {
         ex.realizado = e.target.checked;
         scoreInput.disabled = !ex.realizado;
         if (!ex.realizado) scoreInput.value = '';
-        ex.nota = scoreInput.value;
-        TEOSStore.saveCourseSimulator(this.currentCourseId, TEOSStore.getCourseById(this.currentCourseId).simulator);
+        ex.nota = scoreInput.value !== '' ? parseFloat(scoreInput.value) : '';
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
         this.calculateSimulatorResult();
       });
 
       scoreInput.addEventListener('input', (e) => {
         ex.nota = e.target.value !== '' ? parseFloat(e.target.value) : '';
-        TEOSStore.saveCourseSimulator(this.currentCourseId, TEOSStore.getCourseById(this.currentCourseId).simulator);
+        TEOSStore.saveCourseSimulator(this.currentCourseId, this.activeSimulatorData);
         this.calculateSimulatorResult();
       });
 
@@ -932,9 +942,11 @@ class TEOSApp {
   /* Core Calculation Algorithm directly ported from Calculadora-de-Notas-main */
   calculateSimulatorResult() {
     const course = TEOSStore.getCourseById(this.currentCourseId);
-    if (!course || !course.simulator) return;
+    if (!course) return;
 
-    const simData = course.simulator;
+    let simData = this.activeSimulatorData || course.simulator;
+    if (!simData) return;
+
     const numSecciones = simData.secciones ? simData.secciones.length : 0;
     const notaMinima = parseFloat(this.simNotaMinima.value) || 10.5;
     const selectVal = this.simNotaObjetivoSelect.value;
@@ -954,7 +966,9 @@ class TEOSApp {
 
     if (Math.abs(pesoTotal - 100) > 0.01) {
       this.simResultBody.innerHTML = `
-        <p class="advertencia">Los pesos de las secciones deben sumar 100%. Actualmente suman ${pesoTotal.toFixed(2)}%</p>
+        <div class="status-banner warning">
+          <span>⚠️ Los pesos de las secciones deben sumar 100%. Actualmente suman <strong>${pesoTotal.toFixed(2)}%</strong></span>
+        </div>
       `;
       return;
     }
@@ -990,60 +1004,77 @@ class TEOSApp {
     const maximaNotaAlcanzable = notaActual + (20 * pesoTotalPendientes / 100);
     let objetivoAlcanzable = notaObjetivo <= maximaNotaAlcanzable + 0.001;
 
-    let examenNecesarioHtml = '';
-    let mensajeAdicional = '';
-
-    if (examenesPendientes.length > 0) {
-      if (!objetivoAlcanzable) {
-        mensajeAdicional = `<p class="advertencia">¡Atención! La máxima nota que puedes alcanzar es <strong>${maximaNotaAlcanzable.toFixed(2)}</strong></p>`;
-      } else {
-        const deficit = notaObjetivo - notaActual;
-        const notaTotalNecesaria = (deficit * 100) / pesoTotalPendientes;
-
-        if (notaTotalNecesaria > 20) {
-          objetivoAlcanzable = false;
-          mensajeAdicional = `<p class="advertencia">¡Atención! Requieres más de 20 en los exámenes. La máxima nota alcanzable es <strong>${maximaNotaAlcanzable.toFixed(2)}</strong></p>`;
-        } else {
-          examenesPendientes.forEach(ex => {
-            const notaMostrar = usarEnteros ? Math.ceil(notaTotalNecesaria) : (notaTotalNecesaria < 0 ? '0.00' : notaTotalNecesaria.toFixed(2));
-            examenNecesarioHtml += `
-              <p><strong>Evaluación ${ex.examenIndex} (${ex.seccionNombre}):</strong> Necesitas <strong>${notaMostrar}</strong></p>
-            `;
-          });
-          mensajeAdicional = `<p>Sacando esas notas alcanzarías tu objetivo de <strong>${notaObjetivo.toFixed(2)}</strong></p>`;
-        }
-      }
-    }
-
-    // Render results view
     const notaFinalFormateada = notaActual.toFixed(2);
     const notaObjetivoFormateada = notaObjetivo.toFixed(2);
+    const maximaFormateada = maximaNotaAlcanzable.toFixed(2);
+
+    let htmlContent = `
+      <div class="result-stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Nota Acumulada</span>
+          <span class="stat-value primary">${notaFinalFormateada}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Nota Objetivo</span>
+          <span class="stat-value goal">${notaObjetivoFormateada}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Máx. Posible</span>
+          <span class="stat-value max">${maximaFormateada}</span>
+        </div>
+      </div>
+    `;
 
     if (notaActual >= notaObjetivo) {
-      this.simResultBody.innerHTML = `
-        <p><strong>Nota Acumulada Actual:</strong> ${notaFinalFormateada}</p>
-        <p class="felicidades">¡Felicidades, ya has alcanzado tu objetivo de ${notaObjetivoFormateada}!</p>
+      htmlContent += `
+        <div class="status-banner success">
+          <span>🎉 <strong>¡Felicidades!</strong> Ya has alcanzado tu objetivo de <strong>${notaObjetivoFormateada}</strong>.</span>
+        </div>
+      `;
+    } else if (examenesPendientes.length === 0) {
+      htmlContent += `
+        <div class="status-banner warning">
+          <span>⚠️ Ya has completado todas las evaluaciones. Tu nota final obtenida es <strong>${notaFinalFormateada}</strong>.</span>
+        </div>
       `;
     } else {
-      let contenido = `
-        <p><strong>Nota Acumulada Actual:</strong> ${notaFinalFormateada}</p>
-        <p><strong>Nota Objetivo:</strong> ${notaObjetivoFormateada}</p>
-      `;
+      const deficit = notaObjetivo - notaActual;
+      const notaTotalNecesaria = (deficit * 100) / pesoTotalPendientes;
 
-      if (!objetivoAlcanzable) {
-        contenido += `
-          <p class="advertencia">Tu objetivo no es alcanzable</p>
-          ${mensajeAdicional}
+      if (!objetivoAlcanzable || notaTotalNecesaria > 20) {
+        htmlContent += `
+          <div class="status-banner warning">
+            <span>⚠️ <strong>Objetivo no alcanzable:</strong> Requieres más de 20 puntos por examen. La nota máxima que podrías alcanzar es <strong>${maximaFormateada}</strong>.</span>
+          </div>
         `;
       } else {
-        contenido += `
-          <p style="margin-top:8px; font-weight:600;">Para alcanzar tu objetivo:</p>
-          ${examenNecesarioHtml}
-          ${mensajeAdicional}
+        htmlContent += `
+          <div class="status-banner info">
+            <span>💡 Lograrás tu objetivo de <strong>${notaObjetivoFormateada}</strong> obteniendo las siguientes notas mínimas:</span>
+          </div>
+
+          <div class="result-subtitle">Notas requeridas por examen pendiente:</div>
+          <div class="result-exams-list">
         `;
+
+        examenesPendientes.forEach(ex => {
+          const notaMostrar = usarEnteros ? Math.ceil(notaTotalNecesaria) : (notaTotalNecesaria < 0 ? '0.00' : notaTotalNecesaria.toFixed(2));
+          htmlContent += `
+            <div class="exam-result-item">
+              <div class="exam-result-info">
+                <span class="exam-result-title">Evaluación ${ex.examenIndex}</span>
+                <span class="exam-result-sec">${ex.seccionNombre} (${ex.pesoExamen.toFixed(1)}%)</span>
+              </div>
+              <span class="badge-grade">Necesitas ${notaMostrar}</span>
+            </div>
+          `;
+        });
+
+        htmlContent += `</div>`;
       }
-      this.simResultBody.innerHTML = contenido;
     }
+
+    this.simResultBody.innerHTML = htmlContent;
   }
 
   /* --- 6. TAREAS VIEW --- */
