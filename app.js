@@ -514,7 +514,13 @@ class TEOSApp {
           return;
         }
 
-        if (this.deferredPrompt) {
+        if (this.isIOS()) {
+          // Force showing iOS / Safari step-by-step modal guide on iPhone/iPad
+          if (this.iosInstallModal) {
+            this.iosInstallModal.classList.add('active');
+          }
+        } else if (this.deferredPrompt) {
+          // Native PWA prompt for Android / Desktop Chrome
           this.deferredPrompt.prompt();
           this.deferredPrompt.userChoice.then((choice) => {
             if (choice.outcome === 'accepted') {
@@ -523,7 +529,7 @@ class TEOSApp {
             this.deferredPrompt = null;
           });
         } else {
-          // Show iOS / Safari step-by-step modal guide
+          // Fallback showing modal guide if no prompt available
           if (this.iosInstallModal) {
             this.iosInstallModal.classList.add('active');
           }
@@ -573,6 +579,13 @@ class TEOSApp {
     this.renderScheduleView();
     this.renderCoursesView();
     this.renderTasksList();
+  }
+
+  isIOS() {
+    const ua = window.navigator.userAgent || '';
+    const isIOSUA = /iPhone|iPad|iPod/i.test(ua);
+    const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    return isIOSUA || isIPadOS;
   }
 
   /* --- 1. HOME VIEW --- */

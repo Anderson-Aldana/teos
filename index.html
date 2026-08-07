@@ -545,55 +545,46 @@
       </button>
     </nav>
 
-    <!-- Modal Guía de Instalación para iOS / Safari -->
-    <div class="ios-modal-overlay" id="iosInstallModal">
-      <div class="ios-alert-dialog install-dialog">
-        <div class="install-dialog-header">
-          <img src="assets/apple-touch-icon.png" alt="TEOS Logo" class="install-app-logo">
-          <h3>Instalar TEOS en tu iPhone</h3>
-          <p>Sigue estos sencillos pasos para instalar TEOS en tu pantalla de inicio y usarla como una App nativa sin barras del navegador.</p>
-        </div>
-
-        <div class="install-steps-list">
-          <div class="install-step">
-            <div class="step-icon-bubble">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-            </div>
-            <div class="step-text">
-              <strong>1. Presiona Compartir</strong>
-              <span>Toca el botón compartir en la barra inferior de Safari.</span>
-            </div>
-          </div>
-
-          <div class="install-step">
-            <div class="step-icon-bubble">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-            </div>
-            <div class="step-text">
-              <strong>2. Agregar a inicio</strong>
-              <span>Desplázate hacia abajo y selecciona <b>"Agregar a inicio"</b>.</span>
-            </div>
-          </div>
-
-          <div class="install-step">
-            <div class="step-icon-bubble">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <div class="step-text">
-              <strong>3. Confirmar "Agregar"</strong>
-              <span>Presiona <b>Agregar</b> en la esquina superior derecha.</span>
-            </div>
+    <!-- Modal Guía de Instalación para iOS / Safari (Estilo Viñeta con Flecha Inferior) -->
+    <div class="ios-install-tooltip-overlay" id="iosInstallModal">
+      <div class="ios-install-tooltip">
+        <!-- Botón de Cerrar Rojo -->
+        <button class="tooltip-close-btn" id="btnCloseInstallModal" aria-label="Cerrar">×</button>
+        
+        <div class="tooltip-header">
+          <img src="assets/apple-touch-icon.png" alt="TEOS Logo" class="tooltip-app-logo">
+          <div class="tooltip-title-block">
+            <h3>INSTALAR APP</h3>
+            <p>Para usar a pantalla completa:</p>
           </div>
         </div>
 
-        <div class="pointer-down-indicator">
-          <span class="pointer-icon">👇</span>
-          <span>Toca el botón compartir en la barra inferior</span>
-        </div>
+        <div class="tooltip-steps">
+          <div class="tooltip-step">
+            <span class="step-num">1</span>
+            <span class="step-text">
+              Toca el botón 
+              <span class="inline-icon-badge">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+              </span> 
+              <b>Compartir</b>
+            </span>
+          </div>
 
-        <div class="ios-alert-actions" style="margin-top: 16px;">
-          <button class="ios-alert-btn default-btn" id="btnCloseInstallModal">Entendido</button>
+          <div class="tooltip-step">
+            <span class="step-num">2</span>
+            <span class="step-text">
+              Busca y selecciona 
+              <span class="inline-icon-badge">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+              </span> 
+              <b>Agregar a Inicio</b>
+            </span>
+          </div>
         </div>
+        
+        <!-- Flecha inferior (Notch) -->
+        <div class="tooltip-arrow"></div>
       </div>
     </div>
 
