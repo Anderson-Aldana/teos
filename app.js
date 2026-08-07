@@ -1021,8 +1021,8 @@ class TEOSApp {
         <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''}>
         <div class="task-content">
           <div class="task-title">${t.title}</div>
+          ${courseName ? `<div class="task-course" style="color:${courseColor}; font-weight:600; font-size:13px; margin-top:2px;">${courseName}</div>` : ''}
           <div class="task-meta">
-            ${courseName ? `<span style="color:${courseColor}; font-weight:600;">${courseName}</span> | ` : ''}
             ${t.dueTime ? `🕒 ${this.formatTime12h(t.dueTime)}` : ''} ${t.dueDate ? `📅 ${t.dueDate}` : ''}
           </div>
         </div>
