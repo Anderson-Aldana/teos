@@ -325,6 +325,53 @@ class TEOSApp {
     this.taskDueTimeInput = document.getElementById('taskDueTimeInput');
     this.btnCancelTaskModal = document.getElementById('btnCancelTaskModal');
     this.btnSaveTaskModal = document.getElementById('btnSaveTaskModal');
+
+    // iOS Custom Alert / Dialog Modal
+    this.iosAlertModal = document.getElementById('iosAlertModal');
+    this.iosAlertTitle = document.getElementById('iosAlertTitle');
+    this.iosAlertMessage = document.getElementById('iosAlertMessage');
+    this.iosAlertActions = document.getElementById('iosAlertActions');
+  }
+
+  /* --- Custom iOS Alert & Confirm Modals --- */
+  showConfirm({ title, message, confirmText = 'Aceptar', isDanger = true, onConfirm }) {
+    this.iosAlertTitle.textContent = title;
+    this.iosAlertMessage.textContent = message;
+    this.iosAlertActions.className = 'ios-alert-actions';
+    
+    this.iosAlertActions.innerHTML = `
+      <button class="ios-alert-btn cancel" id="btnAlertCancel">Cancelar</button>
+      <button class="ios-alert-btn ${isDanger ? 'danger' : 'confirm-primary'}" id="btnAlertConfirm">${confirmText}</button>
+    `;
+
+    const closeAlert = () => this.iosAlertModal.classList.remove('active');
+
+    document.getElementById('btnAlertCancel').onclick = () => closeAlert();
+    document.getElementById('btnAlertConfirm').onclick = () => {
+      closeAlert();
+      if (onConfirm) onConfirm();
+    };
+
+    this.iosAlertModal.classList.add('active');
+  }
+
+  showAlert({ title, message, buttonText = 'OK', onOk }) {
+    this.iosAlertTitle.textContent = title;
+    this.iosAlertMessage.textContent = message;
+    this.iosAlertActions.className = 'ios-alert-actions single-action';
+    
+    this.iosAlertActions.innerHTML = `
+      <button class="ios-alert-btn confirm-primary" id="btnAlertOk">${buttonText}</button>
+    `;
+
+    const closeAlert = () => this.iosAlertModal.classList.remove('active');
+
+    document.getElementById('btnAlertOk').onclick = () => {
+      closeAlert();
+      if (onOk) onOk();
+    };
+
+    this.iosAlertModal.classList.add('active');
   }
 
   getTodayCode() {
@@ -436,11 +483,17 @@ class TEOSApp {
     });
 
     this.btnDeleteCourse.addEventListener('click', () => {
-      if (confirm('¿Estás seguro de que deseas eliminar este curso?')) {
-        TEOSStore.deleteCourse(this.currentCourseId);
-        this.navigateToScreen('screenCursos');
-        this.renderAll();
-      }
+      this.showConfirm({
+        title: 'Eliminar Curso',
+        message: '¿Estás seguro de que deseas eliminar este curso?',
+        confirmText: 'Eliminar',
+        isDanger: true,
+        onConfirm: () => {
+          TEOSStore.deleteCourse(this.currentCourseId);
+          this.navigateToScreen('screenCursos');
+          this.renderAll();
+        }
+      });
     });
 
     // Simulador Screen Events
@@ -484,10 +537,16 @@ class TEOSApp {
     });
 
     this.btnClearData.addEventListener('click', () => {
-      if (confirm('¡ATENCIÓN! Se borrarán todos los cursos, horario y tareas. ¿Deseas continuar?')) {
-        TEOSStore.clearAll();
-        location.reload();
-      }
+      this.showConfirm({
+        title: 'Borrar Todo',
+        message: '¡ATENCIÓN! Se borrarán todos los cursos, horario y tareas. ¿Deseas continuar?',
+        confirmText: 'Borrar todo',
+        isDanger: true,
+        onConfirm: () => {
+          TEOSStore.clearAll();
+          location.reload();
+        }
+      });
     });
   }
 
@@ -1093,7 +1152,10 @@ class TEOSApp {
     const endTime = this.courseEndTimeInput.value;
 
     if (!name || !startTime || !endTime) {
-      alert('Por favor completa el nombre y el horario del curso.');
+      this.showAlert({
+        title: 'Campo Requerido',
+        message: 'Por favor completa el nombre y el horario del curso.'
+      });
       return;
     }
 
@@ -1147,7 +1209,10 @@ class TEOSApp {
   saveTaskFromModal() {
     const title = this.taskTitleInput.value.trim();
     if (!title) {
-      alert('Por favor ingresa la descripción de la tarea.');
+      this.showAlert({
+        title: 'Campo Requerido',
+        message: 'Por favor ingresa la descripción de la tarea.'
+      });
       return;
     }
 
@@ -1190,13 +1255,22 @@ class TEOSApp {
         const importedData = JSON.parse(e.target.result);
         if (importedData && Array.isArray(importedData.courses) && Array.isArray(importedData.tasks)) {
           TEOSStore.saveData(importedData);
-          alert('¡Datos importados con éxito!');
-          this.renderAll();
+          this.showAlert({
+            title: 'Importación Exitosa',
+            message: '¡Tus datos han sido importados con éxito!',
+            onOk: () => this.renderAll()
+          });
         } else {
-          alert('El archivo JSON no tiene el formato válido de TEOS.');
+          this.showAlert({
+            title: 'Error de Formato',
+            message: 'El archivo JSON no tiene el formato válido de TEOS.'
+          });
         }
       } catch (err) {
-        alert('Error al leer el archivo JSON.');
+        this.showAlert({
+          title: 'Error de Lectura',
+          message: 'Ocurrió un error al leer el archivo JSON.'
+        });
       }
     };
     reader.readAsText(file);
