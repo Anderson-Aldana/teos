@@ -1172,6 +1172,36 @@ class TEOSApp {
   }
 
   /* --- 6. TAREAS VIEW --- */
+  sortTasks(tasks) {
+    return tasks.sort((a, b) => {
+      // 1. Tasks with dueDate come before tasks without dueDate
+      if (a.dueDate && !b.dueDate) return -1;
+      if (!a.dueDate && b.dueDate) return 1;
+
+      // 2. Compare dueDate chronologically if both have it
+      if (a.dueDate && b.dueDate) {
+        const dateCmp = a.dueDate.localeCompare(b.dueDate);
+        if (dateCmp !== 0) return dateCmp;
+      }
+
+      // 3. Same date or both without date: compare dueTime (tasks with specific time come first)
+      if (a.dueTime && !b.dueTime) return -1;
+      if (!a.dueTime && b.dueTime) return 1;
+      if (a.dueTime && b.dueTime) {
+        const timeCmp = a.dueTime.localeCompare(b.dueTime);
+        if (timeCmp !== 0) return timeCmp;
+      }
+
+      // 4. In 'all' view, pending tasks come before completed if date/time is identical
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1;
+      }
+
+      // 5. Alphabetical tie-breaker
+      return (a.title || '').localeCompare(b.title || '');
+    });
+  }
+
   renderTasksList() {
     let tasks = TEOSStore.getTasks();
     if (this.activeTaskFilter === 'pending') {
@@ -1179,6 +1209,8 @@ class TEOSApp {
     } else if (this.activeTaskFilter === 'completed') {
       tasks = tasks.filter(t => t.completed);
     }
+
+    this.sortTasks(tasks);
 
     this.tasksListContainer.innerHTML = '';
 
@@ -1417,7 +1449,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Register PWA Service Worker for Offline capability
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('TEOS PWA Service Worker registrado con éxito:', reg.scope))
+      .then(reg => {
+        console.log('TEOS PWA Service Worker registrado con éxito:', reg.scope);
+        reg.update();
+      })
       .catch(err => console.error('Error al registrar Service Worker:', err));
   }
 });
